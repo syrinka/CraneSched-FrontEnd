@@ -257,6 +257,7 @@ func ChangeNodeState(nodeName string, state string, reason string) {
 	default:
 		log.Fatalf("Invalid state given: %s\n Request aborted \n Valid states are: drain, resume", state)
 	}
+	req.Uid = uint32(os.Geteuid())
 
 	reply, err := stub.ModifyNode(context.Background(), req)
 	if err != nil {

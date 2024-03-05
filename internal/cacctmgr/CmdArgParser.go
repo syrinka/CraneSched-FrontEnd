@@ -260,6 +260,14 @@ var (
 			ShowQos("")
 		},
 	}
+	showEventCmd = &cobra.Command{
+		Use:   "event",
+		Short: "Display event table",
+		Long:  "",
+		Run: func(cmd *cobra.Command, args []string) {
+			ShowEvents()
+		},
+	}
 	/* ---------------------------------------------------- find ---------------------------------------------------- */
 	findCmd = &cobra.Command{
 		Use:     "find",
@@ -460,6 +468,7 @@ func init() {
 	showCmd.AddCommand(showAccountCmd)
 	showCmd.AddCommand(showUserCmd)
 	showCmd.AddCommand(showQosCmd)
+	showCmd.AddCommand(showEventCmd)
 	showAccountCmd.Flags().BoolVarP(&FlagNoHeader, "no-header", "n", false, "no headers on output")
 	showAccountCmd.Flags().StringVarP(&FlagFormat, "format", "o", "", "format specification")
 	showUserCmd.Flags().StringVarP(&FlagAccountName, "account", "A", "", "The account where the user resides")

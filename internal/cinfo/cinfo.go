@@ -74,9 +74,15 @@ func cinfoFunc() {
 	table := tablewriter.NewWriter(os.Stdout)
 	util.SetBorderlessTable(table)
 	var tableData [][]string
-	table.SetHeader([]string{"PARTITION", "AVAIL", "TIMELIMIT", "NODES", "STATE", "NODELIST"})
+	table.SetHeader([]string{"PARTITION", "AVAIL", "TIMELIMIT", "NODES", "STATE", "NODELIST(REASON)"})
 	for _, partitionCraned := range reply.Partitions {
 		for _, commonCranedStateList := range partitionCraned.CranedLists {
+			var nodelistReason string
+			if commonCranedStateList.State == protos.CranedState_CRANE_DRAIN {
+				nodelistReason = commonCranedStateList.Reason
+			} else {
+				nodelistReason = commonCranedStateList.CranedListRegex
+			}
 			if commonCranedStateList.Count > 0 {
 				tableData = append(tableData, []string{
 					partitionCraned.Name,
@@ -84,7 +90,7 @@ func cinfoFunc() {
 					"infinite",
 					strconv.FormatUint(uint64(commonCranedStateList.Count), 10),
 					strings.ToLower(commonCranedStateList.State.String()[6:]),
-					commonCranedStateList.CranedListRegex,
+					nodelistReason,
 				})
 			}
 		}
