@@ -22,11 +22,12 @@ import (
 	"bufio"
 	"context"
 	"fmt"
-	log "github.com/sirupsen/logrus"
 	"os"
 	"regexp"
 	"strconv"
 	"strings"
+
+	log "github.com/sirupsen/logrus"
 )
 
 type CbatchArg struct {
@@ -81,7 +82,7 @@ func ProcessCbatchArg(args []CbatchArg) (bool, *protos.TaskToCtld) {
 			task.NtasksPerNode = uint32(num)
 		case "--time", "-t":
 			isOk := util.ParseDuration(arg.val, task.TimeLimit)
-			if isOk == false {
+			if !isOk {
 				log.Print("Invalid " + arg.name)
 				return false, nil
 			}
@@ -111,6 +112,8 @@ func ProcessCbatchArg(args []CbatchArg) (bool, *protos.TaskToCtld) {
 			task.GetUserEnv = true
 		case "--export":
 			task.Env["CRANE_EXPORT_ENV"] = arg.val
+		case "--container":
+			task.Container = arg.val
 		case "-o", "--output":
 			task.GetBatchMeta().OutputFilePattern = arg.val
 		case "-e", "--error":
@@ -134,7 +137,7 @@ func ProcessCbatchArg(args []CbatchArg) (bool, *protos.TaskToCtld) {
 	}
 	if FlagTime != "" {
 		ok := util.ParseDuration(FlagTime, task.TimeLimit)
-		if ok == false {
+		if !ok {
 			log.Print("Invalid --time")
 			return false, nil
 		}
@@ -174,6 +177,9 @@ func ProcessCbatchArg(args []CbatchArg) (bool, *protos.TaskToCtld) {
 	}
 	if FlagExport != "" {
 		task.Env["CRANE_EXPORT_ENV"] = FlagExport
+	}
+	if FlagContainer != "" {
+		task.Container = FlagContainer
 	}
 	if FlagStdoutPath != "" {
 		task.GetBatchMeta().OutputFilePattern = FlagStdoutPath
@@ -365,6 +371,8 @@ func Cbatch(jobFilePath string) {
 
 	task.Type = protos.TaskType_Batch
 	if task.Cwd == "" {
+		// If container task, cwd is omitted and only
+		// used to generate default output/error file path.
 		task.Cwd, _ = os.Getwd()
 	}
 
