@@ -90,13 +90,13 @@ var (
 		},
 	}
 	/* --------------------------------------------------- remove --------------------------------------------------- */
-	removeCmd = &cobra.Command{
+	deleteCmd = &cobra.Command{
 		Use:     "delete",
 		Aliases: []string{"remove"},
 		Short:   "Delete entity",
 		Long:    "",
 	}
-	removeAccountCmd = &cobra.Command{
+	deleteAccountCmd = &cobra.Command{
 		Use:   "account",
 		Short: "Delete an existing account",
 		Long:  "",
@@ -105,7 +105,7 @@ var (
 			DeleteAccount(args[0])
 		},
 	}
-	removeUserCmd = &cobra.Command{
+	deleteUserCmd = &cobra.Command{
 		Use:   "user",
 		Short: "Delete an existing user",
 		Long:  "",
@@ -114,7 +114,7 @@ var (
 			DeleteUser(args[0], FlagName)
 		},
 	}
-	removeQosCmd = &cobra.Command{
+	deleteQosCmd = &cobra.Command{
 		Use:   "qos",
 		Short: "Delete an existing Qos",
 		Long:  "",
@@ -125,9 +125,10 @@ var (
 	}
 	/* --------------------------------------------------- modify  -------------------------------------------------- */
 	modifyCmd = &cobra.Command{
-		Use:   "modify",
-		Short: "Modify entity",
-		Long:  "",
+		Use:     "modify",
+		Aliases: []string{"update"},
+		Short:   "Modify entity",
+		Long:    "",
 	}
 	modifyAccountCmd = &cobra.Command{
 		Use:   "account",
@@ -397,11 +398,11 @@ func init() {
 	}
 
 	/* --------------------------------------------------- remove --------------------------------------------------- */
-	rootCmd.AddCommand(removeCmd)
-	removeCmd.AddCommand(removeAccountCmd)
-	removeCmd.AddCommand(removeUserCmd)
-	removeCmd.AddCommand(removeQosCmd)
-	removeUserCmd.Flags().StringVarP(&FlagName, "account", "A", "", "Remove user from this account")
+	rootCmd.AddCommand(deleteCmd)
+	deleteCmd.AddCommand(deleteAccountCmd)
+	deleteCmd.AddCommand(deleteUserCmd)
+	deleteCmd.AddCommand(deleteQosCmd)
+	deleteUserCmd.Flags().StringVarP(&FlagName, "account", "A", "", "Remove user from this account")
 	/* --------------------------------------------------- modify  -------------------------------------------------- */
 	rootCmd.AddCommand(modifyCmd)
 
