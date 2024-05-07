@@ -255,7 +255,8 @@ func ChangeNodeState(nodeName string, state string, reason string) {
 	case "resume":
 		req.NewState = protos.CranedState_CRANE_IDLE
 	default:
-		log.Fatalf("Invalid state given: %s\n Request aborted \n Valid states are: drain, resume", state)
+		log.Fatalf("Invalid state given: %s\n Request aborted \n You must specify a state by '-t' or '--state'"+
+			"\n Valid states are: drain, resume", state)
 	}
 	req.Uid = uint32(os.Geteuid())
 
