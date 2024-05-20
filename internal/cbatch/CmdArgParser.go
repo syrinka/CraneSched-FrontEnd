@@ -40,6 +40,7 @@ var (
 	FlagGetUserEnv    string
 	FlagExport        string
 	FlagContainer     string
+	FlagInterpreter   string
 	FlagStdoutPath    string
 	FlagStderrPath    string
 
@@ -74,6 +75,7 @@ func ParseCmdArgs() {
 	rootCmd.Flags().StringVar(&FlagGetUserEnv, "get-user-env", "", "get user's environment variables")
 	rootCmd.Flags().StringVar(&FlagExport, "export", "", "propagate environment variables")
 	rootCmd.Flags().StringVar(&FlagContainer, "container", "", "OCI bundle path of the container")
+	rootCmd.Flags().StringVar(&FlagInterpreter, "interpreter", "", "interpreter for batch script")
 	rootCmd.Flags().StringVarP(&FlagStdoutPath, "output", "o", "", "file for batch script's standard output")
 	rootCmd.Flags().StringVarP(&FlagStderrPath, "error", "e", "", "file for batch script's standard error output")
 

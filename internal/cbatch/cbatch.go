@@ -56,7 +56,7 @@ func ProcessCbatchArg(args []CbatchArg) (bool, *protos.TaskToCtld) {
 	task.GetUserEnv = false
 	task.Env = make(map[string]string)
 
-	///*************set parameter values based on the file*******************************///
+	/*** Set parameter values based on the file ***/
 	for _, arg := range args {
 		switch arg.name {
 		case "--nodes", "-N":
@@ -67,6 +67,7 @@ func ProcessCbatchArg(args []CbatchArg) (bool, *protos.TaskToCtld) {
 			}
 			task.NodeNum = uint32(num)
 		case "--cpus-per-task", "-c":
+			// FIXME: BUG? 'bitSize' argument is invalid, must be either 32 or 64 (SA1030)
 			num, err := strconv.ParseFloat(arg.val, 10)
 			if err != nil {
 				log.Print("Invalid " + arg.name)
@@ -114,6 +115,8 @@ func ProcessCbatchArg(args []CbatchArg) (bool, *protos.TaskToCtld) {
 			task.Env["CRANE_EXPORT_ENV"] = arg.val
 		case "--container":
 			task.Container = arg.val
+		case "--interpreter":
+			task.GetBatchMeta().Interpreter = arg.val
 		case "-o", "--output":
 			task.GetBatchMeta().OutputFilePattern = arg.val
 		case "-e", "--error":
@@ -123,7 +126,7 @@ func ProcessCbatchArg(args []CbatchArg) (bool, *protos.TaskToCtld) {
 		}
 	}
 
-	// ************* set parameter values based on the command line *********************
+	/*** Set parameter values based on the command line ***/
 	// If the command line argument is set, it replaces the argument read from the file,
 	// so the command line has a higher priority
 	if FlagNodes != 0 {
@@ -136,9 +139,8 @@ func ProcessCbatchArg(args []CbatchArg) (bool, *protos.TaskToCtld) {
 		task.NtasksPerNode = FlagNtasksPerNode
 	}
 	if FlagTime != "" {
-		ok := util.ParseDuration(FlagTime, task.TimeLimit)
-		if !ok {
-			log.Print("Invalid --time")
+		if ok := util.ParseDuration(FlagTime, task.TimeLimit); !ok {
+			log.Error("Invalid --time")
 			return false, nil
 		}
 	}
@@ -181,6 +183,9 @@ func ProcessCbatchArg(args []CbatchArg) (bool, *protos.TaskToCtld) {
 	if FlagContainer != "" {
 		task.Container = FlagContainer
 	}
+	if FlagInterpreter != "" {
+		task.GetBatchMeta().Interpreter = FlagInterpreter
+	}
 	if FlagStdoutPath != "" {
 		task.GetBatchMeta().OutputFilePattern = FlagStdoutPath
 	}
@@ -189,7 +194,7 @@ func ProcessCbatchArg(args []CbatchArg) (bool, *protos.TaskToCtld) {
 	}
 
 	if task.CpusPerTask <= 0 || task.NtasksPerNode == 0 || task.NodeNum == 0 {
-		log.Print("Invalid --cpus-per-task, --ntasks-per-node or --node-num")
+		log.Error("Invalid --cpus-per-task, --ntasks-per-node or --node-num")
 		return false, nil
 	}
 
@@ -330,7 +335,7 @@ func Cbatch(jobFilePath string) {
 	defer func(file *os.File) {
 		err := file.Close()
 		if err != nil {
-			log.Printf("Failed to close %s\n", file.Name())
+			log.Warnf("Failed to close %s\n", file.Name())
 		}
 	}(file)
 
@@ -342,11 +347,16 @@ func Cbatch(jobFilePath string) {
 
 	for scanner.Scan() {
 		num++
-		success := ProcessLine(scanner.Text(), &sh, &args)
-		if !success {
-			err = fmt.Errorf("grammer error at line %v", num)
-			fmt.Println(err.Error())
-			os.Exit(1)
+
+		// Shebang line
+		if (num == 1) && strings.HasPrefix(scanner.Text(), "#!") {
+			args = append(args, CbatchArg{name: "--interpreter", val: scanner.Text()[2:]})
+			continue
+		}
+
+		// #CBATCH line
+		if ok := ProcessLine(scanner.Text(), &sh, &args); !ok {
+			log.Fatalf("grammar error at line %v", num)
 		}
 	}
 
@@ -366,7 +376,7 @@ func Cbatch(jobFilePath string) {
 	task.Uid = uint32(os.Getuid())
 	task.CmdLine = strings.Join(os.Args, " ")
 
-	// Process the content of --get-user-env
+	// Process the content of --export
 	SetPropagatedEnviron(task)
 
 	task.Type = protos.TaskType_Batch
