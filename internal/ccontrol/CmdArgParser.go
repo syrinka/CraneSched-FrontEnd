@@ -29,7 +29,7 @@ var (
 	FlagMem           string
 	FlagPartitions    []string
 	FlagNodeStr       string
-	FlagPriority      uint32
+	FlagPriority      int64
 	FlagAllowAccounts []string
 	FlagDenyAccounts  []string
 	FlagJobId         uint32
@@ -211,7 +211,7 @@ func init() {
 	addCmd.AddCommand(addPartitionCmd)
 	addPartitionCmd.Flags().StringVarP(&FlagName, "name", "N", "", "Partition name")
 	addPartitionCmd.Flags().StringVar(&FlagNodeStr, "nodes", "", "The included nodes can be written individually, abbreviated or mixed, please write them in a string")
-	addPartitionCmd.Flags().Uint32Var(&FlagPriority, "priority", 0, "Partition priority")
+	addPartitionCmd.Flags().Int64Var(&FlagPriority, "priority", -1, "Partition priority")
 	addPartitionCmd.Flags().StringSliceVar(&FlagAllowAccounts, "allowlist", nil, "List of accounts allowed to use this partition")
 	addPartitionCmd.Flags().StringSliceVar(&FlagDenyAccounts, "denylist", nil, "Prohibit the use of the account list in this partition. The --denylist and the --allowlist parameter can only be selected as either")
 	addPartitionCmd.MarkFlagsMutuallyExclusive("allowlist", "denylist")
@@ -238,7 +238,7 @@ func init() {
 	updateCmd.AddCommand(updatePartitionCmd)
 	updatePartitionCmd.Flags().StringVarP(&FlagName, "name", "N", "", "Partition name")
 	updatePartitionCmd.Flags().StringVar(&FlagNodeStr, "nodes", "", "The included nodes can be written individually, abbreviated or mixed, please write them in a string")
-	updatePartitionCmd.Flags().Uint32Var(&FlagPriority, "priority", 0, "Partition priority")
+	updatePartitionCmd.Flags().Int64Var(&FlagPriority, "priority", -1, "Partition priority")
 	updatePartitionCmd.Flags().StringSliceVar(&FlagAllowAccounts, "allowlist", nil, "List of accounts allowed to use this partition")
 	updatePartitionCmd.Flags().StringSliceVar(&FlagDenyAccounts, "denylist", nil, "Prohibit the use of the account list in this partition. The --denylist and the --allowlist parameter can only be selected as either")
 	updatePartitionCmd.MarkFlagsMutuallyExclusive("allowlist", "denylist")

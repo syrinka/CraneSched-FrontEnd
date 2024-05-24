@@ -52,6 +52,7 @@ enum CranedState{
   CRANE_MIX = 1;
   CRANE_ALLOC = 2;
   CRANE_DOWN = 3;
+  CRANE_DRAIN = 4;
 }
 
 enum TaskStatus {
@@ -218,7 +219,7 @@ message PartitionInfo {
   uint64 avail_mem = 10;
   uint64 alloc_mem = 11;
 
-  uint32 priority = 12;
+  int64 priority = 12;
   repeated string allow_list = 13;
   repeated string deny_list = 14;
 }

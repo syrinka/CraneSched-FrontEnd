@@ -58,11 +58,11 @@ func init() {
 	rootCmd.PersistentFlags().StringVarP(&FlagConfigFilePath, "config", "C",
 		util.DefaultConfigPath, "Path to configuration file")
 	rootCmd.Flags().StringVarP(&FlagFilterEndTime, "end-time", "E",
-		"", "Select jobs eligible before this time")
+		"", "Select jobs eligible before this time (timeFormat : 2006-01-02T15:04:05)")
 	rootCmd.Flags().StringVarP(&FlagFilterStartTime, "start-time", "S",
-		"", "Select jobs eligible after this time")
+		"", "Select jobs eligible after this time (timeFormat : 2006-01-02T15:04:05)")
 	rootCmd.Flags().StringVarP(&FlagFilterSubmitTime, "submit-time", "s",
-		"", "Select jobs eligible after this time")
+		"", "Select jobs eligible after this time (timeFormat : 2006-01-02T15:04:05)")
 	rootCmd.Flags().StringVarP(&FlagFilterAccounts, "account", "A", "",
 		"comma separated list of accounts\n"+
 			"to view, default is all accounts")
