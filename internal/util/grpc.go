@@ -18,7 +18,6 @@ package util
 
 import (
 	"CraneFrontEnd/generated/protos"
-	"CraneFrontEnd/internal/util"
 	"crypto/tls"
 	"crypto/x509"
 	"fmt"
@@ -118,7 +117,7 @@ func GetStubToCtldByConfig(config *Config) protos.CraneCtldClient {
 		ServerCertContent, err := os.ReadFile(config.ServerCertFilePath)
 		if err != nil {
 			log.Errorln("Read server certificate error: " + err.Error())
-			os.Exit(util.ErrorGeneric)
+			os.Exit(ErrorGeneric)
 		}
 
 		ServerKeyContent, err := os.ReadFile(config.ServerKeyFilePath)
