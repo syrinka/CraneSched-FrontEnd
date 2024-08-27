@@ -43,7 +43,7 @@ jobs:
           echo "Installing protoc version $PROTOC_VERSION"
 
           # Download the specified version of protoc
-          wget https://github.com/protocolbuffers/protobuf/releases/download/v$PROTOC_VERSION/protoc-$PROTOC_VERSION-linux-x86_64.zip -o protoc.zip
+          wget https://github.com/protocolbuffers/protobuf/releases/download/v$PROTOC_VERSION/protoc-$PROTOC_VERSION-linux-x86_64.zip -O protoc.zip
           unzip protoc.zip -d protoc
           rm -rf protoc.zip
 
