@@ -33,25 +33,22 @@ jobs:
     - name: Cache Protoc
       uses: actions/cache@v4
       with:
-        path: ${{ runner.tool_cache }}/protoc
+        path: ${{ runner.tool_cache }}/protoc.zip
         key: ${{ runner.os }}-protoc-${{ env.PROTOC_VERSION }}
 
     - name: Install Protoc
       working-directory: ${{ runner.tool_cache }}
       run: |
-        if ! [[ -d protoc ]]; then
-          echo "Installing protoc version $PROTOC_VERSION"
-
-          # Download the specified version of protoc
+        if ! [[ -e protoc.zip ]]; then
+          echo "Downloading protoc version $PROTOC_VERSION"
           wget https://github.com/protocolbuffers/protobuf/releases/download/v$PROTOC_VERSION/protoc-$PROTOC_VERSION-linux-x86_64.zip -O protoc.zip
-          unzip protoc.zip -d protoc
-          rm -rf protoc.zip
-
-          sudo mv protoc/bin/protoc /usr/local/bin/
-          sudo mv protoc/include/google /usr/local/include/
         else
           echo "protoc version $PROTOC_VERSION is already cached."
         fi
+
+        unzip protoc.zip -d protoc
+        sudo mv protoc/bin/protoc /usr/local/bin/
+        sudo mv protoc/include/google /usr/local/include/
         
     - name: Install Protoc Plugin
       run: |
