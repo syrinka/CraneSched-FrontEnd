@@ -18,6 +18,7 @@ package util
 
 import (
 	"CraneFrontEnd/generated/protos"
+	"CraneFrontEnd/internal/util"
 	"crypto/tls"
 	"crypto/x509"
 	"fmt"
