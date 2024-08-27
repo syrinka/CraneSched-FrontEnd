@@ -32,7 +32,7 @@ jobs:
       with:
         path: |
           /usr/local/bin/protoc
-          /usr/local/include/google/protobuf
+          /usr/local/include/google
         key: ${{ runner.os }}-protoc-23.2
         restore-keys: |
           ${{ runner.os }}-protoc-
@@ -47,13 +47,13 @@ jobs:
           
           # Remove old protoc version if exists
           sudo rm -f /usr/local/bin/protoc
-          sudo rm -rf /usr/local/include/google/protobuf
+          sudo rm -rf /usr/local/include/google
 
           # Download and install the specified version of protoc
           wget https://github.com/protocolbuffers/protobuf/releases/download/v$PROTOC_VERSION/protoc-$PROTOC_VERSION-linux-x86_64.zip
           unzip protoc-$PROTOC_VERSION-linux-x86_64.zip -d protoc
           sudo mv protoc/bin/protoc /usr/local/bin/
-          sudo mv protoc/include/* /usr/local/include/
+          sudo mv protoc/include/google /usr/local/include/
           
           # Clean up
           rm -rf protoc protoc-$PROTOC_VERSION-linux-x86_64.zip
