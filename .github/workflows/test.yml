@@ -36,7 +36,7 @@ jobs:
         PROTOC_VERSION=23.2
 
         # Check if the protoc version is already up-to-date
-        if command -v protoc &> /dev/null; then
+        if ! command -v protoc &> /dev/null; then
           echo "Installing protoc version $PROTOC_VERSION"
           
           # Remove old protoc version if exists
