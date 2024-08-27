@@ -6,14 +6,17 @@ name: Test
 on:
   push:
     branches: [ "master" ]
-    paths:
-    - "**/*.go"
-    - "**/*.proto"
+    # paths:
+    # - "**/*.go"
+    # - "**/*.proto"
   pull_request:
     branches: [ "master" ]
     paths:
     - "**/*.go"
     - "**/*.proto"
+
+env:
+  PROTOC_VERSION: "23.2"
 
 jobs:
 
@@ -25,42 +28,30 @@ jobs:
     - name: Set up Go
       uses: actions/setup-go@v5
       with:
-        go-version: '1.22'
+        go-version: "1.22"
 
     - name: Cache Protoc
-      uses: actions/cache@v3
+      uses: actions/cache@v4
       with:
-        path: |
-          /usr/local/bin/protoc
-          /usr/local/include/google
-        key: ${{ runner.os }}-protoc-23.2
-        restore-keys: |
-          ${{ runner.os }}-protoc-
+        path: ${{ runner.tool_cache }}/protoc
+        key: ${{ runner.os }}-protoc-${{ env.PROTOC_VERSION }}
 
     - name: Install Protoc
+      working-directory: ${{ runner.tool_cache }}
       run: |
-        PROTOC_VERSION=23.2
-
-        # Check if the protoc version is already up-to-date
-        if ! command -v protoc &> /dev/null; then
+        if ! [[ -d protoc ]]; then
           echo "Installing protoc version $PROTOC_VERSION"
-          
-          # Remove old protoc version if exists
-          sudo rm -f /usr/local/bin/protoc
-          sudo rm -rf /usr/local/include/google
 
-          # Download and install the specified version of protoc
-          wget https://github.com/protocolbuffers/protobuf/releases/download/v$PROTOC_VERSION/protoc-$PROTOC_VERSION-linux-x86_64.zip
-          unzip protoc-$PROTOC_VERSION-linux-x86_64.zip -d protoc
+          # Download the specified version of protoc
+          wget https://github.com/protocolbuffers/protobuf/releases/download/v$PROTOC_VERSION/protoc-$PROTOC_VERSION-linux-x86_64.zip -o protoc.zip
+          unzip protoc.zip -d protoc
+          rm -rf protoc.zip
+
           sudo mv protoc/bin/protoc /usr/local/bin/
           sudo mv protoc/include/google /usr/local/include/
-          
-          # Clean up
-          rm -rf protoc protoc-$PROTOC_VERSION-linux-x86_64.zip
         else
           echo "protoc version $PROTOC_VERSION is already cached."
-        fi
-
+        
     - name: Install Protoc Plugin
       run: |
         go install google.golang.org/protobuf/cmd/protoc-gen-go@latest &&
