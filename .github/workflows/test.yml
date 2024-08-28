@@ -45,7 +45,7 @@ jobs:
           echo "protoc version $PROTOC_VERSION is already cached."
         fi
 
-        unzip protoc.zip -d protoc
+        unzip protoc.zip -q -d protoc
         sudo mv protoc/bin/protoc /usr/local/bin/
         sudo mv protoc/include/google /usr/local/include/
         
@@ -53,11 +53,11 @@ jobs:
         go install google.golang.org/grpc/cmd/protoc-gen-go-grpc@latest
 
     - name: Build
-      run: make all | tee &> build.log
+      run: make all |& tee build.log
 
     - name: Upload artifacts
       if: success()
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: build-output
         path: |
