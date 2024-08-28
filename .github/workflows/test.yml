@@ -1,3 +1,4 @@
+
 name: Test
 
 on:
@@ -11,6 +12,7 @@ on:
     paths:
     - "**/*.go"
     - "**/*.proto"
+  workflow_dispatch:
 
 env:
   PROTOC_VERSION: "23.2"
@@ -48,10 +50,20 @@ jobs:
         sudo mv protoc/bin/protoc /usr/local/bin/
         sudo mv protoc/include/google /usr/local/include/
         
-    - name: Install Protoc Plugin
-      run: |
         go install google.golang.org/protobuf/cmd/protoc-gen-go@latest &&
         go install google.golang.org/grpc/cmd/protoc-gen-go-grpc@latest
 
     - name: Build
-      run: make all
+      run: make all | tee &> build.log
+
+    - name: Upload artifacts
+      if: success()
+      uses: actions/upload-artifact@v3
+      with:
+        name: build-output
+        path: |
+          ./build/
+          ./build.log
+        if-no-files-found: error
+        retention-days: 30
+        overwrite: true
