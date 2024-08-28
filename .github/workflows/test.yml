@@ -45,7 +45,7 @@ jobs:
           echo "protoc version $PROTOC_VERSION is already cached."
         fi
 
-        unzip protoc.zip -q -d protoc
+        unzip -q protoc.zip -d protoc
         sudo mv protoc/bin/protoc /usr/local/bin/
         sudo mv protoc/include/google /usr/local/include/
         
