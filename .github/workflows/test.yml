@@ -12,6 +12,11 @@ on:
     - "**/*.go"
     - "**/*.proto"
   workflow_dispatch:
+    inputs:
+      upload_artifact:
+        description: Upload artifact
+        type: boolean
+        default: false
 
 env:
   PROTOC_VERSION: "23.2"
@@ -55,8 +60,8 @@ jobs:
     - name: Build
       run: make all |& tee build.log
 
-    - name: Upload artifacts
-      if: success()
+    - name: Upload artifact
+      if: ${{ inputs.upload_artifact }}
       uses: actions/upload-artifact@v4
       with:
         name: build-output
