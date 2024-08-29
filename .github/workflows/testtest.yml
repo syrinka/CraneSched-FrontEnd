@@ -1,0 +1,23 @@
+name: Image Build Test
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    container:
+      image: ghcr.io/nativu5/cranedev:ci
+      credentials:
+         username: ${{ github.actor }}
+         password: ${{ github.token }}
+    defaults:
+      run:
+        shell: bash -leo pipefail {0}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Build
+        run: make all |& tee build.log
