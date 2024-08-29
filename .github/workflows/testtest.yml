@@ -1,6 +1,7 @@
 name: Image Build Test
 
 on:
+  push:
   workflow_dispatch:
     inputs:
       upload_artifact:
@@ -29,7 +30,7 @@ jobs:
         uses: actions/cache@v4
         with:
           path: /root/go
-          key: ${{ runner.os }}-gocache-${{ hashFiles('go.mod') }}
+          key: ${{ runner.os }}-gopkg-${{ hashFiles('go.mod') }}
 
       # https://github.com/docker-library/golang/issues/452
       - name: Set workspace as safe
