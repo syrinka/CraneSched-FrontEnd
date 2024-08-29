@@ -2,6 +2,11 @@ name: Image Build Test
 
 on:
   workflow_dispatch:
+    inputs:
+      upload_artifact:
+        description: Upload artifact
+        type: boolean
+        default: false
 
 jobs:
   build:
@@ -20,14 +25,27 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
         
-      - name: Cache Protoc
+      - name: Cache Go pkg
         uses: actions/cache@v4
         with:
           path: /root/go
-          key: ${{ runner.os }}-gomod
+          key: ${{ runner.os }}-gocache-${{ hashFiles('go.mod') }}
 
+      # https://github.com/docker-library/golang/issues/452
       - name: Set workspace as safe
         run: git config --global --add safe.directory $GITHUB_WORKSPACE
 
       - name: Build
         run: make all |& tee build.log
+
+      - name: Upload artifact
+        if: ${{ inputs.upload_artifact }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-output
+          path: |
+            ./build/
+            ./build.log
+          if-no-files-found: error
+          retention-days: 30
+          overwrite: true
