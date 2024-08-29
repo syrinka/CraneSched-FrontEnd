@@ -1,7 +1,6 @@
 name: Image Build Test
 
 on:
-  push:
   workflow_dispatch:
     inputs:
       upload_artifact:
@@ -29,7 +28,9 @@ jobs:
       - name: Cache Go pkg
         uses: actions/cache@v4
         with:
-          path: /root/go
+          path: |
+            ${{ env.GOPATH }}
+            ${{ env.GOCACHE }}
           key: ${{ runner.os }}-gopkg-${{ hashFiles('go.mod') }}
 
       # https://github.com/docker-library/golang/issues/452
